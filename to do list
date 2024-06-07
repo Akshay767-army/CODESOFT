@@ -1,0 +1,113 @@
+import os
+
+# Define the file to store the tasks
+TASKS_FILE = 'tasks.txt'
+
+def load_tasks():
+    """Load tasks from the file."""
+    if not os.path.exists(TASKS_FILE):
+        return []
+
+    with open(TASKS_FILE, 'r') as file:
+        tasks = file.readlines()
+
+    tasks = [task.strip() for task in tasks]
+    return tasks
+
+def save_tasks(tasks):
+    """Save tasks to the file."""
+    with open(TASKS_FILE, 'w') as file:
+        for task in tasks:
+            file.write(task + '\n')
+
+def add_task(task):
+    """Add a new task."""
+    tasks = load_tasks()
+    tasks.append(task)
+    save_tasks(tasks)
+
+def view_tasks():
+    """View all tasks."""
+    tasks = load_tasks()
+    if not tasks:
+        print("No tasks found.")
+    else:
+        for idx, task in enumerate(tasks, 1):
+            print(f"{idx}. {task}")
+
+def update_task(task_number, new_task):
+    """Update an existing task."""
+    tasks = load_tasks()
+    if 0 < task_number <= len(tasks):
+        tasks[task_number - 1] = new_task
+        save_tasks(tasks)
+    else:
+        print("Invalid task number.")
+
+def delete_task(task_number):
+    """Delete a task."""
+    tasks = load_tasks()
+    if 0 < task_number <= len(tasks):
+        tasks.pop(task_number - 1)
+        save_tasks(tasks)
+    else:
+        print("Invalid task number.")
+
+def mark_task(task_number, complete=True):
+    """Mark a task as complete or incomplete."""
+    tasks = load_tasks()
+    if 0 < task_number <= len(tasks):
+        task = tasks[task_number - 1]
+        if complete:
+            if not task.endswith("[COMPLETE]"):
+                task += " [COMPLETE]"
+        else:
+            if task.endswith("[COMPLETE]"):
+                task = task.replace(" [COMPLETE]", "")
+        tasks[task_number - 1] = task
+        save_tasks(tasks)
+    else:
+        print("Invalid task number.")
+
+def show_menu():
+    """Display the menu options."""
+    print("""
+    To-Do List Application
+    1. View all tasks
+    2. Add a new task
+    3. Update an existing task
+    4. Delete a task
+    5. Mark a task as complete
+    6. Mark a task as incomplete
+    0. Exit
+    """)
+
+def main():
+    while True:
+        show_menu()
+        choice = input("Choose an option: ")
+        if choice == '1':
+            view_tasks()
+        elif choice == '2':
+            task = input("Enter the new task: ")
+            add_task(task)
+        elif choice == '3':
+            task_number = int(input("Enter the task number to update: "))
+            new_task = input("Enter the new task: ")
+            update_task(task_number, new_task)
+        elif choice == '4':
+            task_number = int(input("Enter the task number to delete: "))
+            delete_task(task_number)
+        elif choice == '5':
+            task_number = int(input("Enter the task number to mark as complete: "))
+            mark_task(task_number, complete=True)
+        elif choice == '6':
+            task_number = int(input("Enter the task number to mark as incomplete: "))
+            mark_task(task_number, complete=False)
+        elif choice == '0':
+            break
+        else:
+            print("Invalid choice. Please choose a valid option.")
+
+if __name__ == "__main__":
+    main()
